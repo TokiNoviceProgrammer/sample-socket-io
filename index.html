@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>sample web socket</title>
+</head>
+
+<body>
+    <input id="msg" type="text">
+    <input id="sendMsgButton" type="submit">
+
+    <ul id="messageList"></ul>
+
+    <!-- ライブラリ読込み -->
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- クライアント側の処理 -->
+    <script>
+        const socket = io();
+
+        // 送信ボタンのクリックイベント
+        document.getElementById('sendMsgButton').addEventListener('click', () => {
+            // 入力メッセージを取得
+            const inputMessage = document.getElementById('msg').value;
+            if (inputMessage === '') {
+                return; // 入力がない場合は処理を中断する
+            }
+            // メッセージを送信
+            socket.emit('sendMessage', inputMessage);
+            // 入力メッセージを空にする
+            document.getElementById('msg').value = '';
+        });
+
+        // 他のクライアントから送信された入力メッセージをhtmlに反映
+        socket.on('receiveMessage', (message) => {
+            const ul = document.getElementById('messageList');
+            const li = document.createElement('li');
+            const text = document.createTextNode(message);
+            li.appendChild(text);
+            ul.appendChild(li);
+        });
+    </script>
+</body>
+
+</html>
